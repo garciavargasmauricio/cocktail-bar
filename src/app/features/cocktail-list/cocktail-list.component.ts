@@ -26,6 +26,7 @@ import { Cocktail, SearchType } from '../../core/models/cocktail.model';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CocktailDetailDialogComponent } from '../cocktail-detail-dialog/cocktail-detail-dialog';
 import { CocktailStateService } from '../../core/services/cocktail-state';
+import { FavoritesService } from '../../core/services/favorites';
 
 /**
  * Component responsible for rendering the cocktail catalog grid, handling dynamic search forms,
@@ -69,6 +70,7 @@ export class CocktailListComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly dialog = inject(MatDialog);
   private readonly cocktailApi = inject(CocktailApiService);
   private readonly stateService = inject(CocktailStateService);
+  readonly favoritesService = inject(FavoritesService);
   private readonly destroy$ = new Subject<void>();
 
   /** Signal containing the raw cocktail list retrieved from the API search query */
@@ -77,11 +79,19 @@ export class CocktailListComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Signal indicating whether an HTTP search request is currently in progress */
   readonly isLoading = signal<boolean>(false);
 
-  /** Direct reference to all items for the Virtual Scroll Viewport */
-  readonly displayedCocktails = computed(() => this.rawCocktails());
+  /**
+   * Computed list of cocktails displayed in the Virtual Scroll.
+   * Filters by favorites if `showOnlyFavorites` is true.
+   */
+  readonly displayedCocktails = computed(() => {
+    if (this.showOnlyFavorites()) {
+      return this.favoritesService.favorites();
+    }
+    return this.rawCocktails();
+  });
 
   /** Signal toggle flag indicating whether to display only favorite drinks */
-  readonly showOnlyFavorites = signal<boolean>(false);
+  readonly showOnlyFavorites = signal<boolean>(this.stateService.showOnlyFavorites());
 
   // Get filter search values stored
   private readonly initialSearchType = this.stateService.searchType();
@@ -267,12 +277,12 @@ export class CocktailListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Placeholder handler for toggling a cocktail's favorite status.
+   * Toggles a cocktail's favorite status.
    *
    * @param cocktail - The selected cocktail object.
    */
   toggleFavorite(cocktail: Cocktail): void {
-    console.log(cocktail); // TODO
+    this.favoritesService.toggleFavorite(cocktail);
   }
 
   /**
@@ -282,5 +292,6 @@ export class CocktailListComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   toggleFavoritesView(onlyFavorites: boolean): void {
     this.showOnlyFavorites.set(onlyFavorites);
+    this.stateService.saveShowOnlyFavorites(onlyFavorites);
   }
 }
