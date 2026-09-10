@@ -34,7 +34,6 @@ src/
 │   ├── core/
 │   │   ├── models/
 │   │   │   ├── cocktail.ts
-│   │   │   └── search-type.ts
 │   │   │
 │   │   └── services/
 │   │       ├── cocktail-api.service.ts
@@ -182,13 +181,7 @@ It was chosen instead of the traditional Karma/Jasmine setup because of its:
 Run tests in watch mode:
 
 ```bash
-npm run test
-```
-
-Run the complete suite once:
-
-```bash
-npx vitest run
+npm run test:cov
 ```
 
 ---
