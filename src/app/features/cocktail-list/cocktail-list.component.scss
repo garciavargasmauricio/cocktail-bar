@@ -1,0 +1,89 @@
+.cocktail-list-container {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.filter-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  .search-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    flex: 1;
+    min-width: 300px;
+
+    .select-field {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .search-input-field {
+      flex: 2;
+      min-width: 250px;
+    }
+  }
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  padding: 4rem 0;
+}
+
+.cocktail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.cocktail-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  img {
+    height: 220px;
+    object-fit: cover;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #777;
+
+  .empty-icon {
+    font-size: 4rem;
+    width: 4rem;
+    height: 4rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.sr-only-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.grid-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+}

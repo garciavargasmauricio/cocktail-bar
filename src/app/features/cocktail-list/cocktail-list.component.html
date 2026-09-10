@@ -1,0 +1,95 @@
+<div class="cocktail-list-container">
+  <!-- Search Filter Bar -->
+  <header class="filter-header" role="search" aria-label="Cocktail search and filters">
+    <form [formGroup]="searchForm" class="search-form">
+      <mat-form-field appearance="outline" class="select-field">
+        <mat-label>Search By</mat-label>
+        <mat-select formControlName="searchType" aria-label="Select search criteria">
+          <mat-option value="name">Name (Alphabetical, max 50)</mat-option>
+          <mat-option value="ingredient">Ingredient (Alphabetical)</mat-option>
+          <mat-option value="id">ID (Numeric)</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="search-input-field">
+        <mat-label>Search cocktails...</mat-label>
+        <input
+          matInput
+          formControlName="query"
+          placeholder="e.g. Margarita"
+          aria-describedby="search-error"
+        />
+
+        @if (searchForm.controls.query.hasError('pattern')) {
+          <mat-error id="search-error" role="alert"
+            >Invalid characters. Check filter criteria.</mat-error
+          >
+        }
+        @if (searchForm.controls.query.hasError('maxlength')) {
+          <mat-error id="search-error" role="alert">Maximum 50 characters allowed.</mat-error>
+        }
+      </mat-form-field>
+    </form>
+  </header>
+
+  <!-- Live region to announce updates to screen readers -->
+  <div aria-live="polite" aria-atomic="true" class="sr-only-status">
+    @if (isLoading()) {
+      <p>Loading cocktails, please wait...</p>
+    } @else if (displayedCocktails().length === 0) {
+      <p>No cocktails found for your criteria.</p>
+    } @else {
+      <p>{{ displayedCocktails().length }} cocktails found.</p>
+    }
+  </div>
+
+  <!-- Loading State Visual Indicator -->
+  @if (isLoading()) {
+    <div class="loading-spinner" role="status">
+      <mat-spinner diameter="50" aria-label="Loading cocktails"></mat-spinner>
+    </div>
+  } @else {
+    <!-- Cocktails Grid -->
+    @if (displayedCocktails().length > 0) {
+      <main class="cocktail-grid" role="region" aria-label="Cocktail results grid">
+        <ul class="grid-list">
+          @for (cocktail of displayedCocktails(); track cocktail.id) {
+            <li>
+              <mat-card class="cocktail-card">
+                <img mat-card-image [src]="cocktail.image" [alt]="cocktail.name" loading="lazy" />
+
+                <mat-card-header>
+                  <mat-card-title>
+                    <h2>{{ cocktail.name }}</h2>
+                  </mat-card-title>
+                  <mat-card-subtitle>ID: {{ cocktail.id }}</mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-actions align="end">
+                  <!-- Context Menu Button with specific accessible label -->
+                  <button
+                    mat-icon-button
+                    [matMenuTriggerFor]="cardMenu"
+                    [attr.aria-label]="'More options for ' + cocktail.name"
+                  >
+                    <mat-icon aria-hidden="true">more_vert</mat-icon>
+                  </button>
+
+                  <mat-menu #cardMenu="matMenu">
+                    <!-- Actions will go here -->
+                  </mat-menu>
+                </mat-card-actions>
+              </mat-card>
+            </li>
+          }
+        </ul>
+      </main>
+    } @else {
+      <!-- Empty State -->
+      <div class="empty-state" role="status">
+        <mat-icon class="empty-icon" aria-hidden="true">local_bar</mat-icon>
+        <p>No cocktails found. Try another search criteria.</p>
+      </div>
+    }
+  }
+</div>
