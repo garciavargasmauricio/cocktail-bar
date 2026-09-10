@@ -1,0 +1,55 @@
+<div class="dialog-container">
+  @if (isLoading()) {
+    <div class="spinner-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else if (cocktail(); as item) {
+    <header class="dialog-header">
+      <h1 mat-dialog-title>{{ item.name }}</h1>
+      <button mat-icon-button (click)="close()" aria-label="Close dialog">
+        <mat-icon>close</mat-icon>
+      </button>
+    </header>
+
+    <mat-dialog-content class="dialog-content">
+      <div class="detail-body">
+        <img [src]="item.image" [alt]="item.name" class="detail-image" />
+
+        <div class="detail-info">
+          @if (item.ingredients && item.ingredients.length > 0) {
+            <section class="info-section">
+              <h3>Ingredients</h3>
+              <ul class="ingredients-list">
+                @for (ing of item.ingredients; track $index) {
+                  <li>
+                    <strong>{{ ing.name }}</strong>
+                    @if (ing.measure) {
+                      <span> - {{ ing.measure }}</span>
+                    }
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+
+          @if (item.instructions) {
+            <section class="info-section">
+              <h3>Instructions</h3>
+              <p class="instructions-text">{{ item.instructions }}</p>
+            </section>
+          }
+        </div>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="close()">Close</button>
+    </mat-dialog-actions>
+  } @else {
+    <mat-dialog-content>
+      <p>Could not load cocktail details. Please try again.</p>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="close()">Close</button>
+    </mat-dialog-actions>
+  }
+</div>

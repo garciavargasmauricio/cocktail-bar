@@ -1,0 +1,85 @@
+import { Injectable, Service, signal } from '@angular/core';
+import { SearchType } from '../models/cocktail.model';
+
+export interface ViewportScrollPosition {
+  top: number;
+}
+
+/**
+ * Service responsible for managing and persisting the application state,
+ * including active search parameters and virtual scroll position across browser tabs and page reloads.
+ */
+@Injectable({
+  providedIn: 'root',
+})
+export class CocktailStateService {
+  /** Local storage key used for persisting search filter criteria */
+  private readonly SEARCH_STATE_KEY = 'cocktail_search_state';
+
+  /** Local storage key used for persisting viewport scroll offset */
+  private readonly SCROLL_POS_KEY = 'cocktail_scroll_pos';
+
+  /** Signal holding the current search criteria type ('name', 'ingredient', or 'id') */
+  readonly searchType = signal<SearchType>('name');
+
+  /** Signal holding the active text search query */
+  readonly searchQuery = signal<string>('');
+
+  /** Signal holding the last recorded viewport scroll position */
+  readonly scrollPosition = signal<ViewportScrollPosition>({ top: 0 });
+
+  constructor() {
+    this.restoreState();
+  }
+
+  /**
+   * Persists the active search filter type and text query in both reactive state signals and local storage.
+   *
+   * @param type - The selected search criteria type.
+   * @param query - The user-entered search text string.
+   */
+  saveSearchState(type: SearchType, query: string): void {
+    this.searchType.set(type);
+    this.searchQuery.set(query);
+    localStorage.setItem(this.SEARCH_STATE_KEY, JSON.stringify({ type, query }));
+  }
+
+  /**
+   * Persists the viewport top scroll position offset in both reactive state signal and local storage.
+   *
+   * @param top - The vertical scroll offset in pixels.
+   */
+  saveScrollPosition(top: number): void {
+    const pos = { top };
+    this.scrollPosition.set(pos);
+    localStorage.setItem(this.SCROLL_POS_KEY, JSON.stringify(pos));
+  }
+
+  /**
+   * Restores previously persisted search state and scroll position from local storage during service initialization.
+   *
+   * @private
+   */
+  private restoreState(): void {
+    const savedSearch = localStorage.getItem(this.SEARCH_STATE_KEY);
+    if (savedSearch) {
+      try {
+        const { type, query } = JSON.parse(savedSearch);
+        if (type) this.searchType.set(type);
+        if (query !== undefined) this.searchQuery.set(query);
+      } catch (e) {
+        console.error('Error restoring search state', e);
+      }
+    }
+
+    const savedScroll = localStorage.getItem(this.SCROLL_POS_KEY);
+    if (savedScroll) {
+      try {
+        const pos = JSON.parse(savedScroll);
+        this.scrollPosition.set(pos);
+      } catch (e) {
+        console.error('Error restoring scroll position', e);
+      }
+    }
+  }
+}

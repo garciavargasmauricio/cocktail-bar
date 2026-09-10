@@ -74,7 +74,15 @@
                 </button>
 
                 <mat-menu #cardMenu="matMenu">
-                  <!-- Actions will go here -->
+                  <button mat-menu-item (click)="openDetails(cocktail)">
+                    <mat-icon>info</mat-icon>
+                    <span>View Details</span>
+                  </button>
+
+                  <button mat-menu-item (click)="toggleFavorite(cocktail)">
+                    <mat-icon>favorite_border</mat-icon>
+                    <span>Add to Favorites</span>
+                  </button>
                 </mat-menu>
               </div>
             </mat-card>
