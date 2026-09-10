@@ -19,17 +19,33 @@ export class CocktailStateService {
   /** Local storage key used for persisting viewport scroll offset */
   private readonly SCROLL_POS_KEY = 'cocktail_scroll_pos';
 
+  /** Local storage key used for persisting favorites */
+  private readonly SHOW_ONLY_FAVS_KEY = 'cocktail_show_only_favs';
+
   /** Signal holding the current search criteria type ('name', 'ingredient', or 'id') */
   readonly searchType = signal<SearchType>('name');
 
   /** Signal holding the active text search query */
   readonly searchQuery = signal<string>('');
 
+  /** Signal holding the view toggle state (true = show only favorites, false = show all) */
+  readonly showOnlyFavorites = signal<boolean>(false);
+
   /** Signal holding the last recorded viewport scroll position */
   readonly scrollPosition = signal<ViewportScrollPosition>({ top: 0 });
 
   constructor() {
     this.restoreState();
+  }
+
+  /**
+   * Persists the favorites view mode toggle in signal and local storage.
+   *
+   * @param showOnlyFavs - Boolean flag indicating if only favorites are displayed.
+   */
+  saveShowOnlyFavorites(showOnlyFavs: boolean): void {
+    this.showOnlyFavorites.set(showOnlyFavs);
+    localStorage.setItem(this.SHOW_ONLY_FAVS_KEY, JSON.stringify(showOnlyFavs));
   }
 
   /**
@@ -69,6 +85,15 @@ export class CocktailStateService {
         if (query !== undefined) this.searchQuery.set(query);
       } catch (e) {
         console.error('Error restoring search state', e);
+      }
+    }
+    // Restore view mode toggle
+    const savedFavsToggle = localStorage.getItem(this.SHOW_ONLY_FAVS_KEY);
+    if (savedFavsToggle !== null) {
+      try {
+        this.showOnlyFavorites.set(JSON.parse(savedFavsToggle));
+      } catch (e) {
+        console.error('Error restoring favorites view state', e);
       }
     }
 

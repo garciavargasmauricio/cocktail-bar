@@ -1,13 +1,13 @@
 <div class="dialog-container">
   @if (isLoading()) {
-    <div class="spinner-container">
-      <mat-spinner diameter="40"></mat-spinner>
+    <div class="spinner-container" role="status">
+      <mat-spinner diameter="40" aria-label="Loading cocktail details"></mat-spinner>
     </div>
   } @else if (cocktail(); as item) {
     <header class="dialog-header">
       <h1 mat-dialog-title>{{ item.name }}</h1>
       <button mat-icon-button (click)="close()" aria-label="Close dialog">
-        <mat-icon>close</mat-icon>
+        <mat-icon aria-hidden="true">close</mat-icon>
       </button>
     </header>
 
@@ -18,7 +18,7 @@
         <div class="detail-info">
           @if (item.ingredients && item.ingredients.length > 0) {
             <section class="info-section">
-              <h3>Ingredients</h3>
+              <h2>Ingredients</h2>
               <ul class="ingredients-list">
                 @for (ing of item.ingredients; track $index) {
                   <li>
@@ -34,7 +34,7 @@
 
           @if (item.instructions) {
             <section class="info-section">
-              <h3>Instructions</h3>
+              <h2>Instructions</h2>
               <p class="instructions-text">{{ item.instructions }}</p>
             </section>
           }
@@ -45,7 +45,7 @@
       <button mat-button (click)="close()">Close</button>
     </mat-dialog-actions>
   } @else {
-    <mat-dialog-content>
+    <mat-dialog-content role="alert">
       <p>Could not load cocktail details. Please try again.</p>
     </mat-dialog-content>
     <mat-dialog-actions align="end">

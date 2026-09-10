@@ -17,19 +17,35 @@
           matInput
           formControlName="query"
           placeholder="e.g. Margarita"
-          aria-describedby="search-error"
+          [attr.aria-invalid]="searchForm.controls.query.invalid"
+          [attr.aria-describedby]="searchForm.controls.query.invalid ? 'search-error' : null"
         />
 
         @if (searchForm.controls.query.hasError('pattern')) {
-          <mat-error id="search-error" role="alert"
-            >Invalid characters. Check filter criteria.</mat-error
-          >
+          <mat-error id="search-error" role="alert">
+            Invalid characters. Check filter criteria.
+          </mat-error>
         }
         @if (searchForm.controls.query.hasError('maxlength')) {
-          <mat-error id="search-error" role="alert">Maximum 50 characters allowed.</mat-error>
+          <mat-error id="search-error" role="alert"> Maximum 50 characters allowed. </mat-error>
         }
       </mat-form-field>
     </form>
+
+    <!-- Toggle Favorites Button Bar -->
+    <div class="favorites-toggle-container">
+      <mat-button-toggle-group
+        [value]="showOnlyFavorites()"
+        (change)="toggleFavoritesView($event.value)"
+        aria-label="Filter view by favorites"
+      >
+        <mat-button-toggle [value]="false">All</mat-button-toggle>
+        <mat-button-toggle [value]="true">
+          <mat-icon aria-hidden="true">favorite</mat-icon>
+          Favorites ({{ favoritesService.favorites().length }})
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
   </header>
 
   <!-- Live region to announce updates to screen readers -->
@@ -65,6 +81,17 @@
               </div>
 
               <div class="card-actions">
+                @if (favoritesService.isFavorite(cocktail.id)) {
+                  <mat-icon
+                    class="favorite-badge"
+                    color="warn"
+                    aria-label="Marked as favorite"
+                    role="img"
+                  >
+                    favorite
+                  </mat-icon>
+                }
+
                 <button
                   mat-icon-button
                   [matMenuTriggerFor]="cardMenu"
@@ -75,13 +102,26 @@
 
                 <mat-menu #cardMenu="matMenu">
                   <button mat-menu-item (click)="openDetails(cocktail)">
-                    <mat-icon>info</mat-icon>
+                    <mat-icon aria-hidden="true">info</mat-icon>
                     <span>View Details</span>
                   </button>
 
                   <button mat-menu-item (click)="toggleFavorite(cocktail)">
-                    <mat-icon>favorite_border</mat-icon>
-                    <span>Add to Favorites</span>
+                    <mat-icon
+                      aria-hidden="true"
+                      [color]="favoritesService.isFavorite(cocktail.id) ? 'warn' : ''"
+                    >
+                      {{
+                        favoritesService.isFavorite(cocktail.id) ? 'favorite' : 'favorite_border'
+                      }}
+                    </mat-icon>
+                    <span>
+                      {{
+                        favoritesService.isFavorite(cocktail.id)
+                          ? 'Remove from Favorites'
+                          : 'Add to Favorites'
+                      }}
+                    </span>
                   </button>
                 </mat-menu>
               </div>
