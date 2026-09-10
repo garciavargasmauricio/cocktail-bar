@@ -1,6 +1,6 @@
 .cocktail-list-container {
   padding: 1.5rem;
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -8,62 +8,23 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 
   .search-form {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
     flex: 1;
-    min-width: 300px;
 
     .select-field {
       flex: 1;
-      min-width: 200px;
+      min-width: 180px;
     }
 
     .search-input-field {
       flex: 2;
-      min-width: 250px;
+      min-width: 220px;
     }
-  }
-}
-
-.loading-spinner {
-  display: flex;
-  justify-content: center;
-  padding: 4rem 0;
-}
-
-.cocktail-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.5rem;
-}
-
-.cocktail-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  img {
-    height: 220px;
-    object-fit: cover;
-  }
-}
-
-.empty-state {
-  text-align: center;
-  padding: 4rem 1rem;
-  color: #777;
-
-  .empty-icon {
-    font-size: 4rem;
-    width: 4rem;
-    height: 4rem;
-    margin-bottom: 1rem;
   }
 }
 
@@ -79,11 +40,69 @@
   border: 0;
 }
 
-.grid-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.5rem;
+.virtual-viewport {
+  height: calc(100vh - 220px);
+  width: 100%;
+}
+
+.viewport-item {
+  height: 120px; /* Debe coincidir con itemSize="120" */
+  padding: 0.5rem 0;
+  box-sizing: border-box;
+}
+
+.cocktail-horizontal-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100%;
+  padding: 0.75rem 1rem;
+  gap: 1rem;
+
+  .card-thumb {
+    width: 80px;
+    height: 80px;
+    min-width: 80px; /* Evita que la imagen se deforme */
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .card-details {
+    flex: 1;
+
+    h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0 0 0.25rem 0;
+    }
+
+    .card-id {
+      font-size: 0.85rem;
+      color: #666;
+    }
+  }
+
+  .card-actions {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  padding: 4rem 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #777;
+
+  .empty-icon {
+    font-size: 4rem;
+    width: 4rem;
+    height: 4rem;
+    margin-bottom: 1rem;
+  }
 }

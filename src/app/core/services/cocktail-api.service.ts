@@ -24,6 +24,20 @@ export class CocktailApiService {
   private readonly baseUrl = 'https://www.thecocktaildb.com/api/json/v1/1';
 
   /**
+   * Fetches a large default collection of cocktails (e.g. Alcoholic drinks)
+   * to populate the initial catalog view and support Virtual Scroll.
+   *
+   * @returns An Observable emitting the initial cocktail list.
+   */
+  getDefaultCocktails(): Observable<Cocktail[]> {
+    return this.http
+      .get<CocktailApiResponse>(`${this.baseUrl}/filter.php?a=Alcoholic`)
+      .pipe(
+        map((res) => (res.drinks ? res.drinks.map((dto) => this.mapBasicDtoCocktail(dto)) : [])),
+      );
+  }
+
+  /**
    * Performs cocktail searches based on the specified search type.
    *
    * @param type - The search type filter ('name', 'ingredient', or 'id').

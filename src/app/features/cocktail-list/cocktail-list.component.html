@@ -49,40 +49,37 @@
       <mat-spinner diameter="50" aria-label="Loading cocktails"></mat-spinner>
     </div>
   } @else {
-    <!-- Cocktails Grid -->
     @if (displayedCocktails().length > 0) {
-      <main class="cocktail-grid" role="region" aria-label="Cocktail results grid">
-        <ul class="grid-list">
-          @for (cocktail of displayedCocktails(); track cocktail.id) {
-            <li>
-              <mat-card class="cocktail-card">
-                <img mat-card-image [src]="cocktail.image" [alt]="cocktail.name" loading="lazy" />
+      <main role="region" aria-label="Cocktail virtual scrolling catalog">
+        <cdk-virtual-scroll-viewport itemSize="120" class="virtual-viewport">
+          <div
+            *cdkVirtualFor="let cocktail of displayedCocktails(); trackBy: trackById"
+            class="viewport-item"
+          >
+            <mat-card class="cocktail-horizontal-card">
+              <img [src]="cocktail.image" [alt]="cocktail.name" class="card-thumb" loading="lazy" />
 
-                <mat-card-header>
-                  <mat-card-title>
-                    <h2>{{ cocktail.name }}</h2>
-                  </mat-card-title>
-                  <mat-card-subtitle>ID: {{ cocktail.id }}</mat-card-subtitle>
-                </mat-card-header>
+              <div class="card-details">
+                <h2>{{ cocktail.name }}</h2>
+                <span class="card-id">ID: {{ cocktail.id }}</span>
+              </div>
 
-                <mat-card-actions align="end">
-                  <!-- Context Menu Button with specific accessible label -->
-                  <button
-                    mat-icon-button
-                    [matMenuTriggerFor]="cardMenu"
-                    [attr.aria-label]="'More options for ' + cocktail.name"
-                  >
-                    <mat-icon aria-hidden="true">more_vert</mat-icon>
-                  </button>
+              <div class="card-actions">
+                <button
+                  mat-icon-button
+                  [matMenuTriggerFor]="cardMenu"
+                  [attr.aria-label]="'More options for ' + cocktail.name"
+                >
+                  <mat-icon aria-hidden="true">more_vert</mat-icon>
+                </button>
 
-                  <mat-menu #cardMenu="matMenu">
-                    <!-- Actions will go here -->
-                  </mat-menu>
-                </mat-card-actions>
-              </mat-card>
-            </li>
-          }
-        </ul>
+                <mat-menu #cardMenu="matMenu">
+                  <!-- Actions will go here -->
+                </mat-menu>
+              </div>
+            </mat-card>
+          </div>
+        </cdk-virtual-scroll-viewport>
       </main>
     } @else {
       <!-- Empty State -->

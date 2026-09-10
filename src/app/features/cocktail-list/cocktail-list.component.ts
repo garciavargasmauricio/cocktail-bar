@@ -10,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 import { CocktailApiService } from '../../core/services/cocktail-api.service';
 import { Cocktail, SearchType } from '../../core/models/cocktail.model';
@@ -32,6 +33,7 @@ import { Cocktail, SearchType } from '../../core/models/cocktail.model';
     MatProgressSpinnerModule,
     MatMenuModule,
     MatButtonToggleModule,
+    ScrollingModule,
   ],
   templateUrl: './cocktail-list.component.html',
   styleUrl: './cocktail-list.component.scss',
@@ -41,20 +43,16 @@ export class CocktailListComponent implements OnInit {
   private readonly cocktailApi = inject(CocktailApiService);
 
   /** Signal containing the raw cocktail list retrieved from the API search query */
-  readonly cocktails = signal<Cocktail[]>([]);
+  readonly rawCocktails = signal<Cocktail[]>([]);
 
   /** Signal indicating whether an HTTP search request is currently in progress */
   readonly isLoading = signal<boolean>(false);
 
+  /** Direct reference to all items for the Virtual Scroll Viewport */
+  readonly displayedCocktails = computed(() => this.rawCocktails());
+
   /** Signal toggle flag indicating whether to display only favorite drinks */
   readonly showOnlyFavorites = signal<boolean>(false);
-
-  /**
-   * Computed signal emitting the active list of cocktails to render in the grid.
-   */
-  readonly displayedCocktails = computed(() => {
-    return this.cocktails();
-  });
 
   /**
    * Reactive Form definition managing search filter type and input text query with dynamic validators.
@@ -68,12 +66,33 @@ export class CocktailListComponent implements OnInit {
   });
 
   /**
+   * TrackBy function for CDK Virtual Scroll performance optimization.
+   */
+  trackById(_index: number, item: Cocktail): string {
+    return item.id;
+  }
+
+  /**
    * Lifecycle hook triggered after component initialization.
    * Sets up reactive form listeners and triggers an initial default search.
    */
   ngOnInit(): void {
     this.setupFormSubscriptions();
-    this.fetchCocktails('name', 'Margarita');
+    this.loadInitialCatalog(); //Loads the initial catalog based on alcoholic drinks
+  }
+
+  loadInitialCatalog(): void {
+    this.isLoading.set(true);
+    this.cocktailApi.getDefaultCocktails().subscribe({
+      next: (results) => {
+        this.rawCocktails.set(results);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.rawCocktails.set([]);
+        this.isLoading.set(false);
+      },
+    });
   }
 
   /**
@@ -94,14 +113,21 @@ export class CocktailListComponent implements OnInit {
         queryControl.setValidators([Validators.pattern(/^[a-zA-Z\s]*$/), Validators.maxLength(50)]);
       }
       queryControl.updateValueAndValidity();
+
+      // If the filter changed, refresh the initial catalog
+      this.loadInitialCatalog();
     });
 
     // Debounce search input to avoid spamming API endpoints
     this.searchForm.controls.query.valueChanges
       .pipe(debounceTime(400), distinctUntilChanged())
       .subscribe((query) => {
-        if (this.searchForm.valid && query.trim()) {
+        const trimmedQuery = query.trim();
+        if (this.searchForm.valid && trimmedQuery) {
           this.fetchCocktails(this.searchForm.controls.searchType.value, query);
+        } else if (!trimmedQuery) {
+          // If query is empty fresh the initial catalog
+          this.loadInitialCatalog();
         }
       });
   }
@@ -118,11 +144,11 @@ export class CocktailListComponent implements OnInit {
     this.isLoading.set(true);
     this.cocktailApi.searchCocktails(type, query).subscribe({
       next: (results) => {
-        this.cocktails.set(results);
+        this.rawCocktails.set(results);
         this.isLoading.set(false);
       },
       error: () => {
-        this.cocktails.set([]);
+        this.rawCocktails.set([]);
         this.isLoading.set(false);
       },
     });
