@@ -1,59 +1,351 @@
-# CocktailBar
+# 🍹 Cocktail Bar Application
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.7.
+A modern **Angular cocktail discovery application** for exploring recipes, searching cocktails by name or ingredient, managing favorites, and preserving user preferences across sessions.
 
-## Development server
+The project focuses on **modern Angular patterns**, reactive state management with **Signals**, performance optimization with **CDK Virtual Scrolling**, and a comprehensive testing strategy using **Vitest** and **Playwright**.
 
-To start a local development server, run:
+---
+
+## ✨ Features
+
+- 🔎 Search cocktails by **name or ingredient**
+- 🍸 Browse a dynamic cocktail catalog
+- ❤️ Add and remove cocktails from **favorites**
+- ⭐ Persistent favorites using `localStorage`
+- 🔄 Dynamic client-side filtering
+- 📌 Persistent user preferences and UI state
+- 📜 Persistent scroll position
+- ⚡ Efficient rendering with **Angular CDK Virtual Scrolling**
+- 🪟 Cocktail details displayed in an **Angular Material dialog**
+- 📱 Responsive UI
+- 🧪 Unit testing with **Vitest**
+- 🎭 End-to-end testing with **Playwright**
+- 🌐 Multi-browser E2E testing across Chromium, Firefox, and WebKit
+
+---
+
+## 🏗️ Architecture
+
+The application follows a **feature-driven architecture** that separates domain models, business logic, shared state, and UI features.
+
+```text
+src/
+├── app/
+│   ├── core/
+│   │   ├── models/
+│   │   │   ├── cocktail.ts
+│   │   │   └── search-type.ts
+│   │   │
+│   │   └── services/
+│   │       ├── cocktail-api.service.ts
+│   │       ├── cocktail-state.ts
+│   │       └── favorites.ts
+│   │
+│   ├── features/
+│   │   ├── cocktail-list/
+│   │   │   └── ...
+│   │   │
+│   │   └── cocktail-detail-dialog/
+│   │       └── ...
+│   │
+│   ├── app.component.ts
+│   └── app.config.ts
+│
+├── tests/
+│   └── app-init.spec.ts
+│
+├── playwright.config.ts
+└── vitest.config.ts
+```
+
+### Core
+
+Contains application-wide services, state management, and domain models.
+
+- **`cocktail-api.service.ts`**
+  Responsible for communication with the cocktail API.
+
+- **`cocktail-state.ts`**
+  Manages application-level UI state such as filters, favorite view state, and scroll position.
+
+- **`favorites.ts`**
+  Handles favorite cocktail state and persistence.
+
+- **`models/`**
+  Contains strongly typed TypeScript models and application types.
+
+### Features
+
+UI functionality is organized by domain rather than by technical type.
+
+- **`cocktail-list/`**
+  Main catalog, search/filtering functionality, favorites view, and virtual scrolling.
+
+- **`cocktail-detail-dialog/`**
+  Displays detailed cocktail information inside an Angular Material dialog.
+
+This structure makes individual features easier to maintain, test, and extend.
+
+---
+
+## 🛠️ Technical Decisions
+
+### Angular Signals
+
+The application uses modern Angular **Signals** for reactive state management.
+
+```ts
+signal();
+computed();
+```
+
+Signals provide fine-grained reactivity and are particularly useful for local and application state where a full RxJS stream is unnecessary.
+
+`computed()` is used for derived state such as filtered cocktail collections and other values that depend on reactive state.
+
+This approach keeps state management explicit while reducing unnecessary RxJS boilerplate.
+
+---
+
+### 💾 Persistent State with `localStorage`
+
+Application state is persisted through `localStorage`.
+
+The persisted state includes:
+
+- User filters
+- Search configuration
+- Favorite-view preferences
+- Scroll position
+- Favorite cocktails
+
+This allows the application to restore the user's previous state after a page reload or browser restart.
+
+The persistence logic is encapsulated inside the state/favorites services rather than being coupled directly to UI components.
+
+---
+
+### ⚡ CDK Virtual Scrolling
+
+The cocktail catalog uses Angular CDK's:
+
+```ts
+CdkVirtualScrollViewport;
+```
+
+Virtual scrolling prevents the application from rendering the entire cocktail collection into the DOM at once.
+
+Instead, only the items currently visible in the viewport are rendered.
+
+This is especially useful when working with larger datasets because it:
+
+- Reduces DOM size
+- Improves rendering performance
+- Reduces memory usage
+- Keeps scrolling responsive
+- Avoids unnecessary component creation
+
+---
+
+### 🎨 Angular Material
+
+Angular Material is used for UI components that benefit from accessible and consistent behavior.
+
+For example:
+
+```ts
+MatDialog;
+```
+
+is used to display cocktail details without requiring a separate route.
+
+Angular Material also provides keyboard interaction, accessibility support, and responsive behavior out of the box.
+
+---
+
+## 🧪 Testing Strategy
+
+The project uses two complementary testing tools.
+
+### Unit Tests — Vitest
+
+**Vitest** is used for unit-level testing of application logic and components.
+
+It was chosen instead of the traditional Karma/Jasmine setup because of its:
+
+- Fast execution
+- Modern mocking APIs
+- Simple configuration
+- Excellent developer experience
+- Good integration with modern Angular tooling
+
+Run tests in watch mode:
+
+```bash
+npm run test
+```
+
+Run the complete suite once:
+
+```bash
+npx vitest run
+```
+
+---
+
+### End-to-End Tests — Playwright
+
+**Playwright** is used to validate complete user flows in a real browser environment.
+
+The test suite can run against:
+
+- Chromium
+- Firefox
+- WebKit
+
+Playwright also provides automatic waiting, browser isolation, screenshots, traces, and HTML reporting.
+
+Run E2E tests:
+
+```bash
+npx playwright test
+```
+
+Run Playwright UI mode:
+
+```bash
+npx playwright test --ui
+```
+
+View the generated report:
+
+```bash
+npx playwright show-report
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Make sure you have the following installed:
+
+- Node.js **18+**
+- npm
+
+### Installation
+
+Clone the repository:
+
+```bash
+git clone <repository-url>
+```
+
+Navigate into the project:
+
+```bash
+cd cocktail-bar
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+---
+
+## ▶️ Running the Application
+
+Start the Angular development server:
+
+```bash
+npm run start
+```
+
+Or:
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Open:
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```text
+http://localhost:4200/
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+The application will automatically reload when source files are modified.
+
+---
+
+## 🧪 Running Tests
+
+### Unit Tests
+
+Watch mode:
 
 ```bash
-ng generate --help
+npm run test
 ```
 
-## Building
-
-To build the project run:
+Single execution:
 
 ```bash
-ng build
+npx vitest run
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### E2E Tests
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Run all Playwright tests:
 
 ```bash
-ng test
+npx playwright test
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+Interactive mode:
 
 ```bash
-ng e2e
+npx playwright test --ui
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Generate/view the HTML report:
 
-## Additional Resources
+```bash
+npx playwright show-report
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
+
+## 📚 Tech Stack
+
+| Technology           | Purpose                           |
+| -------------------- | --------------------------------- |
+| **Angular**          | Frontend framework                |
+| **TypeScript**       | Type-safe application development |
+| **Angular Signals**  | Reactive state management         |
+| **Angular CDK**      | Virtual scrolling                 |
+| **Angular Material** | UI components and dialogs         |
+| **Vitest**           | Unit testing                      |
+| **Playwright**       | End-to-end testing                |
+| **localStorage**     | Client-side state persistence     |
+| **Cocktail API**     | Cocktail data source              |
+
+---
+
+## 🎯 Key Engineering Goals
+
+This project was built with a focus on:
+
+- **Modern Angular architecture**
+- **Reactive state management**
+- **Separation of concerns**
+- **Strong TypeScript typing**
+- **Performance optimization**
+- **Accessible UI components**
+- **Persistent client-side state**
+- **Testability**
+- **Maintainable feature-driven organization**
+
+The architecture is designed to make the application easy to extend with additional features such as pagination, advanced filtering, authentication, additional cocktail categories, or a more sophisticated backend data layer.
