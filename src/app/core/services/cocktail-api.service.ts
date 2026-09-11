@@ -9,9 +9,8 @@ import {
 } from '../models/cocktail.model';
 import { map, Observable, of } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
+const baseUrl = 'https://www.thecocktaildb.com/api/json/v1/1';
+
 /**
  * Service responsible for fetching cocktail data from TheCocktailDB public API
  * and mapping raw DTO responses into clean domain models.
@@ -21,7 +20,6 @@ import { map, Observable, of } from 'rxjs';
 })
 export class CocktailApiService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'https://www.thecocktaildb.com/api/json/v1/1';
 
   /**
    * Fetches a large default collection of cocktails (e.g. Alcoholic drinks)
@@ -31,7 +29,7 @@ export class CocktailApiService {
    */
   getDefaultCocktails(): Observable<Cocktail[]> {
     return this.http
-      .get<CocktailApiResponse>(`${this.baseUrl}/filter.php?a=Alcoholic`)
+      .get<CocktailApiResponse>(`${baseUrl}/filter.php?a=Alcoholic`)
       .pipe(
         map((res) => (res.drinks ? res.drinks.map((dto) => this.mapBasicDtoCocktail(dto)) : [])),
       );
@@ -51,14 +49,14 @@ export class CocktailApiService {
     switch (type) {
       case 'name':
         return this.http
-          .get<CocktailApiResponse>(`${this.baseUrl}/search.php?s=${cleanQuery}`)
+          .get<CocktailApiResponse>(`${baseUrl}/search.php?s=${encodeURIComponent(cleanQuery)}`)
           .pipe(
             map((res) => (res.drinks ? res.drinks.map((dto) => this.mapDtoToCocktail(dto)) : [])),
           );
 
       case 'ingredient':
         return this.http
-          .get<CocktailApiResponse>(`${this.baseUrl}/filter.php?i=${cleanQuery}`)
+          .get<CocktailApiResponse>(`${baseUrl}/filter.php?i=${encodeURIComponent(cleanQuery)}`)
           .pipe(
             map((res) =>
               res.drinks ? res.drinks.map((dto) => this.mapBasicDtoCocktail(dto)) : [],
@@ -82,7 +80,7 @@ export class CocktailApiService {
    * @returns An Observable emitting the mapped Cocktail object or `null` if not found.
    */
   getCocktailById(id: string): Observable<Cocktail | null> {
-    return this.http.get<CocktailApiResponse>(`${this.baseUrl}/lookup.php?i=${id}`).pipe(
+    return this.http.get<CocktailApiResponse>(`${baseUrl}/lookup.php?i=${id}`).pipe(
       map((res) => {
         if (!res.drinks || res.drinks.length === 0) return null;
         return this.mapDtoToCocktail(res.drinks[0]);

@@ -1,6 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 import { Cocktail } from '../models/cocktail.model';
 
+export const FAVORITES_KEY = 'cocktail_favorites';
+
 /**
  * Service responsible for managing favorite cocktails, persisting them in local storage,
  * and synchronizing state across multiple browser tabs in real time.
@@ -9,8 +11,6 @@ import { Cocktail } from '../models/cocktail.model';
   providedIn: 'root',
 })
 export class FavoritesService {
-  private readonly FAVORITES_KEY = 'cocktail_favorites';
-
   /** Reactive Signal containing the list of favorite cocktails */
   readonly favorites = signal<Cocktail[]>(this.loadFavoritesFromStorage());
 
@@ -55,7 +55,7 @@ export class FavoritesService {
    */
   private saveFavorites(favs: Cocktail[]): void {
     this.favorites.set(favs);
-    localStorage.setItem(this.FAVORITES_KEY, JSON.stringify(favs));
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs));
   }
 
   /**
@@ -65,7 +65,7 @@ export class FavoritesService {
    * @returns Array of favorite cocktails or empty array if none found.
    */
   private loadFavoritesFromStorage(): Cocktail[] {
-    const data = localStorage.getItem(this.FAVORITES_KEY);
+    const data = localStorage.getItem(FAVORITES_KEY);
     if (!data) return [];
     try {
       return JSON.parse(data);
@@ -83,7 +83,7 @@ export class FavoritesService {
    */
   private listenToCrossTabChanges(): void {
     window.addEventListener('storage', (event) => {
-      if (event.key === this.FAVORITES_KEY) {
+      if (event.key === FAVORITES_KEY) {
         this.favorites.set(this.loadFavoritesFromStorage());
       }
     });

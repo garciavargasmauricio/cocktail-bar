@@ -1,9 +1,18 @@
-import { Injectable, Service, signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { SearchType } from '../models/cocktail.model';
 
 export interface ViewportScrollPosition {
   top: number;
 }
+
+/** Local storage key used for persisting search filter criteria */
+export const SEARCH_STATE_KEY = 'cocktail_search_state';
+
+/** Local storage key used for persisting viewport scroll offset */
+export const SCROLL_POS_KEY = 'cocktail_scroll_pos';
+
+/** Local storage key used for persisting favorites */
+export const SHOW_ONLY_FAVS_KEY = 'cocktail_show_only_favs';
 
 /**
  * Service responsible for managing and persisting the application state,
@@ -13,15 +22,6 @@ export interface ViewportScrollPosition {
   providedIn: 'root',
 })
 export class CocktailStateService {
-  /** Local storage key used for persisting search filter criteria */
-  private readonly SEARCH_STATE_KEY = 'cocktail_search_state';
-
-  /** Local storage key used for persisting viewport scroll offset */
-  private readonly SCROLL_POS_KEY = 'cocktail_scroll_pos';
-
-  /** Local storage key used for persisting favorites */
-  private readonly SHOW_ONLY_FAVS_KEY = 'cocktail_show_only_favs';
-
   /** Signal holding the current search criteria type ('name', 'ingredient', or 'id') */
   readonly searchType = signal<SearchType>('name');
 
@@ -45,7 +45,7 @@ export class CocktailStateService {
    */
   saveShowOnlyFavorites(showOnlyFavs: boolean): void {
     this.showOnlyFavorites.set(showOnlyFavs);
-    localStorage.setItem(this.SHOW_ONLY_FAVS_KEY, JSON.stringify(showOnlyFavs));
+    localStorage.setItem(SHOW_ONLY_FAVS_KEY, JSON.stringify(showOnlyFavs));
   }
 
   /**
@@ -57,7 +57,7 @@ export class CocktailStateService {
   saveSearchState(type: SearchType, query: string): void {
     this.searchType.set(type);
     this.searchQuery.set(query);
-    localStorage.setItem(this.SEARCH_STATE_KEY, JSON.stringify({ type, query }));
+    localStorage.setItem(SEARCH_STATE_KEY, JSON.stringify({ type, query }));
   }
 
   /**
@@ -68,7 +68,7 @@ export class CocktailStateService {
   saveScrollPosition(top: number): void {
     const pos = { top };
     this.scrollPosition.set(pos);
-    localStorage.setItem(this.SCROLL_POS_KEY, JSON.stringify(pos));
+    localStorage.setItem(SCROLL_POS_KEY, JSON.stringify(pos));
   }
 
   /**
@@ -77,7 +77,7 @@ export class CocktailStateService {
    * @private
    */
   private restoreState(): void {
-    const savedSearch = localStorage.getItem(this.SEARCH_STATE_KEY);
+    const savedSearch = localStorage.getItem(SEARCH_STATE_KEY);
     if (savedSearch) {
       try {
         const { type, query } = JSON.parse(savedSearch);
@@ -88,7 +88,7 @@ export class CocktailStateService {
       }
     }
     // Restore view mode toggle
-    const savedFavsToggle = localStorage.getItem(this.SHOW_ONLY_FAVS_KEY);
+    const savedFavsToggle = localStorage.getItem(SHOW_ONLY_FAVS_KEY);
     if (savedFavsToggle !== null) {
       try {
         this.showOnlyFavorites.set(JSON.parse(savedFavsToggle));
@@ -97,7 +97,7 @@ export class CocktailStateService {
       }
     }
 
-    const savedScroll = localStorage.getItem(this.SCROLL_POS_KEY);
+    const savedScroll = localStorage.getItem(SCROLL_POS_KEY);
     if (savedScroll) {
       try {
         const pos = JSON.parse(savedScroll);

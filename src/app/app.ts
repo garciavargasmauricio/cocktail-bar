@@ -8,6 +8,4 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   styleUrl: './app.scss',
   templateUrl: './app.html',
 })
-export class App {
-  protected readonly title = signal('cocktail-bar');
-}
+export class App {}

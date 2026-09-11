@@ -18,6 +18,7 @@ The project focuses on **modern Angular patterns**, reactive state management wi
 - ⚡ Efficient rendering with **Angular CDK Virtual Scrolling**
 - 🪟 Cocktail details displayed in an **Angular Material dialog**
 - 📱 Responsive UI
+- ♿ Accessibility-focused UI with semantic HTML, ARIA attributes, and keyboard-friendly interactions
 - 🧪 Unit testing with **Vitest**
 - 🎭 End-to-end testing with **Playwright**
 - 🌐 Multi-browser E2E testing across Chromium, Firefox, and WebKit
@@ -159,6 +160,25 @@ MatDialog;
 is used to display cocktail details without requiring a separate route.
 
 Angular Material also provides keyboard interaction, accessibility support, and responsive behavior out of the box.
+
+---
+
+## ♿ Accessibility
+
+Accessibility was considered throughout the UI implementation, with a focus on semantic HTML, screen-reader support, meaningful labels, and accessible interaction states.
+
+Examples include:
+
+- Semantic elements such as `<header>`, `<main>`, `<form>`, headings, and native `<button>` elements.
+- Appropriate `aria-label` attributes for controls where the visible text alone is not sufficient.
+- `aria-invalid` and `aria-describedby` for form validation feedback.
+- `role="alert"` for validation errors that need to be announced to screen readers.
+- `aria-live="polite"` and `aria-atomic="true"` to announce dynamic changes such as loading states and search results.
+- `role="status"` for loading and empty states.
+- Descriptive `alt` text for cocktail images.
+- `aria-hidden="true"` for decorative icons that should not be announced by screen readers.
+- Descriptive labels for dynamic actions such as adding or removing cocktails from favorites.
+- Accessible controls for filtering, searching, and navigating cocktail actions.
 
 ---
 

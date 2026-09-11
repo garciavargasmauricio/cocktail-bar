@@ -9,7 +9,6 @@ import { CocktailListComponent } from './cocktail-list.component';
 import { CocktailApiService } from '../../core/services/cocktail-api.service';
 import { CocktailStateService } from '../../core/services/cocktail-state';
 import { FavoritesService } from '../../core/services/favorites';
-import { CocktailDetailDialogComponent } from '../cocktail-detail-dialog/cocktail-detail-dialog';
 import { Cocktail } from '../../core/models/cocktail.model';
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
